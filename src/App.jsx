@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Patients from './pages/Patients'
 import Personnel from './pages/Personnel'
+import Consultations from './pages/Consultations'
 
 function App() {
   return (
@@ -39,6 +40,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Personnel />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/consultations"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Consultations />
                 </Layout>
               </ProtectedRoute>
             }
