@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Patients from './pages/Patients'
+import Personnel from './pages/Personnel'
 
 function App() {
   return (
@@ -28,6 +29,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Patients />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/personnel"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Personnel />
                 </Layout>
               </ProtectedRoute>
             }
