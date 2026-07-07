@@ -9,6 +9,7 @@ import Personnel from './pages/Personnel'
 import Consultations from './pages/Consultations'
 import Hopitaux from './pages/Hopitaux'
 import Stats from './pages/Stats'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -72,6 +73,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Stats />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Admin />
                 </Layout>
               </ProtectedRoute>
             }
