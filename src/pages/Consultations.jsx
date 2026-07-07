@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Plus, CheckCircle2, Clock3, XCircle } from 'lucide-react'
 import { consultationsApi, patientsApi, personnelApi } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 function Badge({ statut }) {
   const map = {
@@ -18,6 +19,9 @@ function Badge({ statut }) {
 }
 
 export default function Consultations() {
+  const { user } = useAuth()
+  const estMedecin = user?.role === 'medecin'
+
   const [consultations, setConsultations] = useState([])
   const [patients, setPatients] = useState([])
   const [personnel, setPersonnel] = useState([])
@@ -89,15 +93,23 @@ export default function Consultations() {
           <h1 className="text-xl font-semibold text-slate-900 tracking-tight">Consultations</h1>
           <p className="text-sm text-slate-500">Rendez-vous et suivi des statuts.</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-teal-950 hover:bg-teal-900 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          <Plus size={15} /> Nouvelle consultation
-        </button>
+        {estMedecin && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-teal-950 hover:bg-teal-900 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Plus size={15} /> Nouvelle consultation
+          </button>
+        )}
       </div>
 
-      {showForm && (
+      {!estMedecin && (
+        <p className="text-xs text-slate-400 mb-4">
+          Seul un medecin peut creer ou annuler une consultation. Vous etes en lecture seule.
+        </p>
+      )}
+
+      {showForm && estMedecin && (
         <form
           onSubmit={handleSubmit}
           className="bg-white border border-slate-200 rounded-xl p-4 mb-6 grid grid-cols-2 gap-3"
@@ -165,7 +177,7 @@ export default function Consultations() {
                 </td>
                 <td className="px-4 py-2.5"><Badge statut={c.statut} /></td>
                 <td className="px-4 py-2.5 text-right">
-                  {c.statut === 'confirme' && (
+                  {estMedecin && c.statut === 'confirme' && (
                     <button
                       onClick={() => handleCancel(c.id)}
                       className="text-xs text-rose-600 hover:underline"
