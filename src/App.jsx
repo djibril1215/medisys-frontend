@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Patients from './pages/Patients'
 import Personnel from './pages/Personnel'
 import Consultations from './pages/Consultations'
+import Hopitaux from './pages/Hopitaux'
 
 function App() {
   return (
@@ -50,6 +51,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Consultations />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hopitaux"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Hopitaux />
                 </Layout>
               </ProtectedRoute>
             }
