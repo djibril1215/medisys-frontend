@@ -11,6 +11,18 @@ function createApi(baseURL) {
     return config
   })
 
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem('medisys_token')
+        localStorage.removeItem('medisys_user')
+        window.location.href = '/login'
+      }
+      return Promise.reject(error)
+    }
+  )
+
   return instance
 }
 
