@@ -8,6 +8,7 @@ import Patients from './pages/Patients'
 import Personnel from './pages/Personnel'
 import Consultations from './pages/Consultations'
 import Hopitaux from './pages/Hopitaux'
+import Stats from './pages/Stats'
 
 function App() {
   return (
@@ -61,6 +62,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Hopitaux />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stats"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Stats />
                 </Layout>
               </ProtectedRoute>
             }
