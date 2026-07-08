@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Plus, ShieldCheck, UserCog } from 'lucide-react'
+import { Plus, ShieldCheck, UserCog, Trash2 } from 'lucide-react'
 import { authApi, hopitauxApi } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 const roles = [
   { value: 'medecin', label: 'Medecin' },
@@ -9,6 +10,7 @@ const roles = [
 ]
 
 export default function Admin() {
+  const { user: currentUser } = useAuth()
   const [users, setUsers] = useState([])
   const [hopitaux, setHopitaux] = useState([])
   const [loading, setLoading] = useState(true)
@@ -18,6 +20,7 @@ export default function Admin() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ nom: '', email: '', mot_de_passe: '', role: 'medecin', hopital_id: '' })
   const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
 
   const loadAll = () => {
     setLoading(true)
@@ -56,6 +59,20 @@ export default function Admin() {
     }
   }
 
+  const handleDelete = async (id, nom) => {
+    if (!window.confirm(`Supprimer definitivement le compte de ${nom} ?`)) return
+    setDeletingId(id)
+    setError('')
+    try {
+      await authApi.delete(`/auth/users/${id}`)
+      loadAll()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Impossible de supprimer ce compte.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -63,7 +80,7 @@ export default function Admin() {
           <h1 className="text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
             <ShieldCheck size={20} className="text-teal-700" /> Administration
           </h1>
-          <p className="text-sm text-slate-500">Creation des comptes medecin, urgentiste et infirmier.</p>
+          <p className="text-sm text-slate-500">Creation et gestion des comptes du reseau.</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -129,6 +146,7 @@ export default function Admin() {
               <th className="px-4 py-2 font-medium">Email</th>
               <th className="px-4 py-2 font-medium">Role</th>
               <th className="px-4 py-2 font-medium">Hopital</th>
+              <th className="px-4 py-2 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -144,6 +162,18 @@ export default function Admin() {
                 <td className="px-4 py-2.5 text-slate-500 capitalize">{u.role.replace('_', ' ')}</td>
                 <td className="px-4 py-2.5 text-slate-500">
                   {u.role === 'super_admin' ? '-' : nomHopital(u.hopital_id)}
+                </td>
+                <td className="px-4 py-2.5 text-right">
+                  {u.id !== currentUser?.id && (
+                    <button
+                      onClick={() => handleDelete(u.id, u.nom)}
+                      disabled={deletingId === u.id}
+                      className="text-rose-600 hover:text-rose-700 disabled:opacity-50"
+                      title="Supprimer ce compte"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

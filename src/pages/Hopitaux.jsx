@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Building2, ArrowRight, CheckCircle2, Clock3, Share2 } from 'lucide-react'
+import { Plus, Building2, ArrowRight, CheckCircle2, Clock3, Share2, Trash2 } from 'lucide-react'
 import { hopitauxApi, patientsApi } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -26,6 +26,7 @@ export default function Hopitaux() {
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
 
   const [showHopitalForm, setShowHopitalForm] = useState(false)
   const [hopitalForm, setHopitalForm] = useState({ nom: '', ville: '', specialites: '', capacite_lits: '' })
@@ -72,6 +73,20 @@ export default function Hopitaux() {
       setError("Impossible de creer l'hopital.")
     } finally {
       setSavingHopital(false)
+    }
+  }
+
+  const handleDeleteHopital = async (id, nom) => {
+    if (!window.confirm(`Supprimer definitivement l'hopital ${nom} ?`)) return
+    setDeletingId(id)
+    setError('')
+    try {
+      await hopitauxApi.delete(`/hopitaux/${id}`)
+      loadAll()
+    } catch (err) {
+      setError(err.response?.data?.message || "Impossible de supprimer cet hopital.")
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -161,9 +176,21 @@ export default function Hopitaux() {
           <div className="flex flex-col gap-2">
             {hopitaux.map((h) => (
               <div key={h.id} className="bg-white border border-slate-200 rounded-xl p-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <Building2 size={14} className="text-teal-700" />
-                  <span className="text-sm font-medium text-slate-800">{h.nom}</span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <Building2 size={14} className="text-teal-700" />
+                    <span className="text-sm font-medium text-slate-800">{h.nom}</span>
+                  </div>
+                  {estSuperAdmin && (
+                    <button
+                      onClick={() => handleDeleteHopital(h.id, h.nom)}
+                      disabled={deletingId === h.id}
+                      className="text-rose-600 hover:text-rose-700 disabled:opacity-50"
+                      title="Supprimer cet hopital"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs text-slate-500">{h.ville}</p>
                 {h.specialites && <p className="text-xs text-slate-400 mt-1">{h.specialites}</p>}
