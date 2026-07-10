@@ -93,41 +93,60 @@ export default function Admin() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white border border-slate-200 rounded-xl p-4 mb-6 grid grid-cols-2 gap-3"
+          className="bg-white border border-slate-200 rounded-xl p-4 mb-6 grid grid-cols-2 gap-4"
         >
-          <input
-            name="nom" required placeholder="Nom complet" value={form.nom} onChange={handleChange}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600"
-          />
-          <input
-            name="email" required type="email" placeholder="Email" value={form.email} onChange={handleChange}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600"
-          />
-          <input
-            name="mot_de_passe" required type="password" placeholder="Mot de passe" value={form.mot_de_passe} onChange={handleChange}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600"
-          />
-          <select
-            name="role" required value={form.role} onChange={handleChange}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600"
-          >
-            {roles.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
-          <select
-            name="hopital_id" required value={form.hopital_id} onChange={handleChange}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 col-span-2"
-          >
-            <option value="">Rattacher a un hopital</option>
-            {hopitaux.map((h) => (
-              <option key={h.id} value={h.id}>{h.nom}</option>
-            ))}
-          </select>
+          <div>
+            <label className="text-xs font-medium text-slate-600 mb-1.5 block">Nom complet</label>
+            <input
+              name="nom" required placeholder="Ex. Dr Marie Kouam" value={form.nom} onChange={handleChange}
+              className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-600 mb-1.5 block">Email</label>
+            <input
+              name="email" required type="email" placeholder="nom@medisys.com" value={form.email} onChange={handleChange}
+              className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-600 mb-1.5 block">Mot de passe</label>
+            <input
+              name="mot_de_passe" required type="password" placeholder="Minimum 8 caracteres" value={form.mot_de_passe} onChange={handleChange}
+              className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-600 mb-1.5 block">Role</label>
+            <select
+              name="role" required value={form.role} onChange={handleChange}
+              className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 w-full"
+            >
+              {roles.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-span-2">
+            <label className="text-xs font-medium text-slate-600 mb-1.5 block">Hopital de rattachement</label>
+            <select
+              name="hopital_id" required value={form.hopital_id} onChange={handleChange}
+              className="text-sm border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-teal-600 w-full"
+            >
+              <option value="">Selectionner un hopital</option>
+              {hopitaux.map((h) => (
+                <option key={h.id} value={h.id}>{h.nom}</option>
+              ))}
+            </select>
+          </div>
 
           <button
             type="submit" disabled={saving}
-            className="col-span-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium py-2 rounded-lg disabled:opacity-60"
+            className="col-span-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium py-2.5 rounded-lg disabled:opacity-60"
           >
             {saving ? 'Creation...' : 'Creer le compte'}
           </button>
