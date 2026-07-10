@@ -1,19 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Plus, Building2, ArrowRight, CheckCircle2, Clock3, Share2, Trash2 } from 'lucide-react'
+import { Plus, Building2, ArrowRight, CheckCircle2, Clock3, Share2, Trash2, History } from 'lucide-react'
 import { hopitauxApi, patientsApi } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
-function Badge({ statut }) {
+function Badge({ statut, modeReprise }) {
   const isAccepte = statut === 'accepte'
   const tone = isAccepte
     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
     : 'bg-amber-50 text-amber-700 border-amber-200'
   const Icon = isAccepte ? CheckCircle2 : Clock3
+  let label = isAccepte ? 'Accepte' : 'En attente'
+  if (isAccepte && modeReprise) {
+    label = modeReprise === 'continuer' ? 'Accepte - Traitement poursuivi' : 'Accepte - Nouveau dossier'
+  }
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium ${tone}`}>
-      <Icon size={11} /> {isAccepte ? 'Accepte' : 'En attente'}
+      <Icon size={11} /> {label}
     </span>
   )
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleString('fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  })
 }
 
 export default function Hopitaux() {
@@ -37,6 +48,7 @@ export default function Hopitaux() {
   const [savingTransfert, setSavingTransfert] = useState(false)
 
   const [transfertEnValidation, setTransfertEnValidation] = useState(null)
+  const [filtreStatut, setFiltreStatut] = useState('tous')
 
   const loadAll = () => {
     setLoading(true)
@@ -47,7 +59,9 @@ export default function Hopitaux() {
     ])
       .then(([h, t, p]) => {
         setHopitaux(h.data.hopitaux)
-        setTransferts(t.data.transferts)
+        setTransferts(
+          t.data.transferts.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        )
         setPatients(p.data.patients)
       })
       .catch(() => setError('Impossible de charger les donnees.'))
@@ -114,6 +128,12 @@ export default function Hopitaux() {
       setError('Impossible de valider le transfert.')
     }
   }
+
+  const transfertsFiltres = transferts.filter((t) => {
+    if (filtreStatut === 'tous') return true
+    if (filtreStatut === 'attente') return t.statut !== 'accepte'
+    return t.statut === 'accepte'
+  })
 
   return (
     <div>
@@ -263,26 +283,47 @@ export default function Hopitaux() {
             </form>
           )}
 
+          <div className="flex gap-1 mb-3 bg-slate-100 rounded-lg p-1 w-fit">
+            {[
+              { key: 'tous', label: 'Tous' },
+              { key: 'attente', label: 'En attente' },
+              { key: 'acceptes', label: 'Acceptes' },
+            ].map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFiltreStatut(f.key)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors ${
+                  filtreStatut === f.key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {transfertsFiltres.length === 0 && !loading && (
+            <div className="bg-white border border-dashed border-slate-200 rounded-xl p-6 text-center">
+              <History size={20} className="text-slate-300 mx-auto mb-2" />
+              <p className="text-xs text-slate-400">Aucun transfert pour ce filtre.</p>
+            </div>
+          )}
+
           <div className="flex flex-col gap-3">
-            {transferts.map((t) => (
+            {transfertsFiltres.map((t) => (
               <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-medium text-slate-800">
                     {t.donnees_patient?.prenom} {t.donnees_patient?.nom}
                   </p>
-                  <Badge statut={t.statut} />
+                  <Badge statut={t.statut} modeReprise={t.mode_reprise} />
                 </div>
-                <p className="text-xs text-slate-500 flex items-center gap-1.5 mb-2">
+                <p className="text-xs text-slate-500 flex items-center gap-1.5 mb-1">
                   {nomHopital(t.hopital_source_id)}
                   <ArrowRight size={11} className="text-slate-400" />
                   {nomHopital(t.hopital_destination_id)}
                 </p>
-                {t.motif && <p className="text-xs text-slate-400 mb-2">{t.motif}</p>}
-                {t.mode_reprise && (
-                  <p className="text-xs text-teal-700 mb-2">
-                    Mode : {t.mode_reprise === 'continuer' ? 'Traitement poursuivi' : 'Nouveau dossier ouvert'}
-                  </p>
-                )}
+                <p className="text-xs text-slate-400 mb-2">Cree le {formatDate(t.created_at)}</p>
+                {t.motif && <p className="text-xs text-slate-500 mb-2 italic">"{t.motif}"</p>}
 
                 {estMedecin && t.statut !== 'accepte' && t.hopital_destination_id === user?.hopital_id && (
                   transfertEnValidation === t.id ? (
