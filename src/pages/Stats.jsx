@@ -49,8 +49,8 @@ export default function Stats() {
 
   useEffect(() => {
     Promise.all([
-      statsApi.get('/stats/dashboard'),
-      statsApi.get('/stats/consultations-by-status'),
+      statsApi.get('/dashboard'),
+      statsApi.get('/consultations-by-status'),
     ])
       .then(([d, s]) => {
         setStats(d.data)

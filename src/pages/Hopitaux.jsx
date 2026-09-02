@@ -53,9 +53,9 @@ export default function Hopitaux() {
   const loadAll = () => {
     setLoading(true)
     Promise.all([
-      hopitauxApi.get('/hopitaux'),
-      hopitauxApi.get('/hopitaux/transferts/all'),
-      estMedecin ? patientsApi.get('/patients') : Promise.resolve({ data: { patients: [] } }),
+      hopitauxApi.get('/'),
+      hopitauxApi.get('/transferts/all'),
+      estMedecin ? patientsApi.get('/') : Promise.resolve({ data: { patients: [] } }),
     ])
       .then(([h, t, p]) => {
         setHopitaux(h.data.hopitaux)
@@ -79,7 +79,7 @@ export default function Hopitaux() {
     e.preventDefault()
     setSavingHopital(true)
     try {
-      await hopitauxApi.post('/hopitaux', hopitalForm)
+      await hopitauxApi.post('/', hopitalForm)
       setHopitalForm({ nom: '', ville: '', specialites: '', capacite_lits: '' })
       setShowHopitalForm(false)
       loadAll()
@@ -95,7 +95,7 @@ export default function Hopitaux() {
     setDeletingId(id)
     setError('')
     try {
-      await hopitauxApi.delete(`/hopitaux/${id}`)
+      await hopitauxApi.delete(`/${id}`)
       loadAll()
     } catch (err) {
       setError(err.response?.data?.message || "Impossible de supprimer cet hopital.")
@@ -108,7 +108,7 @@ export default function Hopitaux() {
     e.preventDefault()
     setSavingTransfert(true)
     try {
-      await hopitauxApi.post('/hopitaux/transferts', transfertForm)
+      await hopitauxApi.post('/transferts', transfertForm)
       setTransfertForm({ patient_id: '', hopital_destination_id: '', motif: '' })
       setShowTransfertForm(false)
       loadAll()
@@ -121,7 +121,7 @@ export default function Hopitaux() {
 
   const handleValider = async (id, mode_reprise) => {
     try {
-      await hopitauxApi.patch(`/hopitaux/transferts/${id}/valider`, { mode_reprise })
+      await hopitauxApi.patch(`/transferts/${id}/valider`, { mode_reprise })
       setTransfertEnValidation(null)
       loadAll()
     } catch {

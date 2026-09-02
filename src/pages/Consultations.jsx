@@ -34,9 +34,9 @@ export default function Consultations() {
   const loadAll = () => {
     setLoading(true)
     Promise.all([
-      consultationsApi.get('/consultations'),
-      patientsApi.get('/patients'),
-      personnelApi.get('/personnel'),
+      consultationsApi.get('/'),
+      patientsApi.get('/'),
+      personnelApi.get('/'),
     ])
       .then(([c, p, s]) => {
         setConsultations(c.data.consultations)
@@ -66,7 +66,7 @@ export default function Consultations() {
     e.preventDefault()
     setSaving(true)
     try {
-      await consultationsApi.post('/consultations', form)
+      await consultationsApi.post('/', form)
       setForm({ patient_id: '', personnel_id: '', date_consultation: '', motif: '' })
       setShowForm(false)
       loadAll()
@@ -79,7 +79,7 @@ export default function Consultations() {
 
   const handleCancel = async (id) => {
     try {
-      await consultationsApi.patch(`/consultations/${id}/cancel`)
+      await consultationsApi.patch(`/${id}/cancel`)
       loadAll()
     } catch {
       setError("Impossible d'annuler la consultation.")

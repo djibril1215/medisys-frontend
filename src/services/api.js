@@ -1,7 +1,9 @@
 import axios from 'axios'
 
-function createApi(baseURL) {
-  const instance = axios.create({ baseURL })
+const BASE_URL = import.meta.env.VITE_API_URL
+
+function createApi(prefix) {
+  const instance = axios.create({ baseURL: `${BASE_URL}${prefix}` })
 
   instance.interceptors.request.use((config) => {
     const token = localStorage.getItem('medisys_token')
@@ -26,9 +28,9 @@ function createApi(baseURL) {
   return instance
 }
 
-export const authApi = createApi(import.meta.env.VITE_AUTH_API_URL)
-export const patientsApi = createApi(import.meta.env.VITE_PATIENTS_API_URL)
-export const personnelApi = createApi(import.meta.env.VITE_PERSONNEL_API_URL)
-export const consultationsApi = createApi(import.meta.env.VITE_CONSULTATIONS_API_URL)
-export const statsApi = createApi(import.meta.env.VITE_STATS_API_URL)
-export const hopitauxApi = createApi(import.meta.env.VITE_HOPITAUX_API_URL)
+export const authApi = createApi('/api/auth')
+export const patientsApi = createApi('/api/patients')
+export const personnelApi = createApi('/api/personnel')
+export const consultationsApi = createApi('/api/consultations')
+export const statsApi = createApi('/api/stats')
+export const hopitauxApi = createApi('/api/hopitaux')

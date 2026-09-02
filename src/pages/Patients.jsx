@@ -35,7 +35,7 @@ export default function Patients() {
     e.preventDefault()
     setSaving(true)
     try {
-      await patientsApi.post('/patients', form)
+      await patientsApi.post('/', form)
       setForm({
         nom: '', prenom: '', date_naissance: '', sexe: '', telephone: '', adresse: '',
         antecedents_medicaux: '', allergies: '',

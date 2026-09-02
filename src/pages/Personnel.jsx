@@ -33,7 +33,7 @@ export default function Personnel() {
     e.preventDefault()
     setSaving(true)
     try {
-      await personnelApi.post('/personnel', form)
+      await personnelApi.post('/', form)
       setForm({ nom: '', prenom: '', email: '', telephone: '', poste: '', role: '', equipe: '' })
       setShowForm(false)
       loadPersonnel()

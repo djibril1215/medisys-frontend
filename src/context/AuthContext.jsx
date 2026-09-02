@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
   })
 
   const login = async (email, mot_de_passe) => {
-    const { data } = await authApi.post('/auth/login', { email, mot_de_passe })
+    const { data } = await authApi.post('/login', { email, mot_de_passe })
     localStorage.setItem('medisys_token', data.token)
     localStorage.setItem('medisys_user', JSON.stringify(data.user))
     setUser(data.user)

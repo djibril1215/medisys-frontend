@@ -24,7 +24,7 @@ export default function Admin() {
 
   const loadAll = () => {
     setLoading(true)
-    Promise.all([authApi.get('/auth/users'), hopitauxApi.get('/hopitaux')])
+    Promise.all([authApi.get('/users'), hopitauxApi.get('/')])
       .then(([u, h]) => {
         setUsers(u.data.users)
         setHopitaux(h.data.hopitaux)
@@ -47,7 +47,7 @@ export default function Admin() {
     setError('')
     setSuccess('')
     try {
-      await authApi.post('/auth/register', form)
+      await authApi.post('/register', form)
       setSuccess(`Compte cree pour ${form.nom}.`)
       setForm({ nom: '', email: '', mot_de_passe: '', role: 'medecin', hopital_id: '' })
       setShowForm(false)
@@ -64,7 +64,7 @@ export default function Admin() {
     setDeletingId(id)
     setError('')
     try {
-      await authApi.delete(`/auth/users/${id}`)
+      await authApi.delete(`/users/${id}`)
       loadAll()
     } catch (err) {
       setError(err.response?.data?.message || 'Impossible de supprimer ce compte.')
